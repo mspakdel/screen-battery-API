@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>screen-interface</title>
+  </head>
+  <body>
+    <p>Screen Width: <span id="screenWidth"></span></p>
+    <p>Screen Height: <span id="screenHeight"></span></p>
+    <p>Screen ColorDepth: <span id="screenColorDepth"></span></p>
+    <p>Screen Orientation Angle: <span id="screenOrientationAngle"></span></p>
+    <p>Screen Orientation Type: <span id="screenOrientationType"></span></p>
+    <p>Screen Pixel Depth: <span id="screenPixelDepth"></span></p>
+    <p>battery status: <span id="battery-status"></span></p>
+    <script>
+      const screenWidth = document.getElementById("screenWidth");
+      const screenHeight = document.getElementById("screenHeight");
+      const screenColorDepth = document.getElementById("screenColorDepth");
+      const screenOrientationAngle = document.getElementById(
+        "screenOrientationAngle"
+      );
+      const screenOrientationType = document.getElementById(
+        "screenOrientationType"
+      );
+      const screenPixelDepth = document.getElementById("screenPixelDepth");
+
+      screenHeight.innerHTML = window.screen.availHeight;
+      screenWidth.innerHTML = window.screen.availWidth;
+      screenColorDepth.innerHTML = window.screen.colorDepth;
+      const obj = window.screen.orientation;
+      screenOrientationAngle.innerHTML = `${obj.angle}    ${window.orientation}`;
+      screenOrientationType.innerHTML = obj.type;
+      screenPixelDepth.innerHTML = window.screen.pixelDepth;
+      window.addEventListener("orientationchange", (e) => {
+        screenOrientationAngle.innerHTML = `${obj.angle}    ${window.orientation}`;
+        screenOrientationType.innerHTML = obj.type;
+      });
+      function updateBatteryStatus(battery) {
+        const batteryLevel = battery.level * 100; // Convert level to percentage
+        const chargingStatus = battery.charging ? "Charging" : "Not Charging";
+        const batteryStatusText = `Battery Level: ${batteryLevel}%<br>Charging: ${chargingStatus}`;
+
+        document.getElementById("battery-status").innerHTML = batteryStatusText;
+      }
+      if (navigator.getBattery) {
+        navigator.getBattery().then(function (battery) {
+          // Update the battery status when battery information is available
+          updateBatteryStatus(battery);
+
+          // Add event listeners to handle updates in battery status
+          battery.addEventListener("levelchange", function () {
+            updateBatteryStatus(battery);
+          });
+
+          battery.addEventListener("chargingchange", function () {
+            updateBatteryStatus(battery);
+          });
+        });
+      } else {
+        document.getElementById("battery-status").innerText =
+          "Battery status is not supported on this device.";
+      }
+    </script>
+  </body>
+</html>
